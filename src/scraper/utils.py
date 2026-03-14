@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 def join_url(base, url):
     if url.startswith("http"):
         return url
+    if url.startswith("/"):
+        return "https://webscraper.io" + url
     return base.rstrip("/") + "/" + url.lstrip("/")
 
 def safe_request(url):

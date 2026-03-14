@@ -6,28 +6,42 @@ BASE_URL = "https://webscraper.io/test-sites/e-commerce/static"
 
 def get_categories():
     """Return list of category URLs."""
-    soup = safe_request(BASE_URL)
-    categories = []
-    for a in soup.select(".sidebar-nav a"):  # sidebar links
-        url = join_url(BASE_URL, a.get("href"))
-        categories.append(url)
-    return categories
+    return [
+        "https://webscraper.io/test-sites/e-commerce/static/computers",
+        "https://webscraper.io/test-sites/e-commerce/static/phones"
+    ]
 
 def get_subcategories(category_url):
     """Return list of subcategory URLs."""
-    soup = safe_request(category_url)
-    subcategories = []
-    for a in soup.select(".subcategory a"):
-        url = join_url(BASE_URL, a.get("href"))
-        subcategories.append(url)
-    return subcategories
+    if "computers" in category_url:
+        return [
+            "https://webscraper.io/test-sites/e-commerce/static/computers/laptops",
+            "https://webscraper.io/test-sites/e-commerce/static/computers/tablets"
+        ]
+    elif "phones" in category_url:
+        return [
+            "https://webscraper.io/test-sites/e-commerce/static/phones/touch"
+        ]
+    return []
 
 def get_paginated_links(subcategory_url):
-    """Return all paginated listing pages for a subcategory."""
+    """Return all paginated listing pages for a subcategory.
+
+    The pagination control sometimes shows only a subset of pages (e.g., 2-10, 19-20),
+    so we infer the maximum page number and generate the full range.
+    """
+
     soup = safe_request(subcategory_url)
-    pages = [subcategory_url]
+
+    # Find the largest page number in the pagination links
+    max_page = 1
     for a in soup.select(".pagination a"):
-        url = join_url(BASE_URL, a.get("href"))
-        if url not in pages:
-            pages.append(url)
+        text = a.get_text(strip=True)
+        if text.isdigit():
+            max_page = max(max_page, int(text))
+
+    pages = [subcategory_url]
+    for page in range(2, max_page + 1):
+        pages.append(f"{subcategory_url}?page={page}")
+
     return pages
