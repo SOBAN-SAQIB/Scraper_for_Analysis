@@ -14,3 +14,14 @@ def safe_request(url):
     except Exception as e:
         print(f"Failed to fetch {url}: {e}")
         return BeautifulSoup("", "html.parser")
+
+
+# utils.py
+def remove_duplicates(products):
+    seen = set()
+    result = []
+    for p in products:
+        if p["url"] not in seen:
+            seen.add(p["url"])
+            result.append(p)
+    return result
