@@ -17,10 +17,10 @@ def safe_request(url):
 
 
 # utils.py
-def remove_duplicates(products):
+def remove_duplicates(productss):
     seen = set()
     result = []
-    for p in products:
+    for p in productss:
         if p["url"] not in seen:
             seen.add(p["url"])
             result.append(p)
